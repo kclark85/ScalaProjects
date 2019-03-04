@@ -34,4 +34,38 @@ class TestWebServer extends FlatSpec with Matchers with MockitoSugar {
     verify(out).close()
     verify(in).close()
   }
+
+  "Get path" should "echo" in {
+    val msg1 = "GET /mockfile HTTP/1.1"
+    val path1 = msg1.slice(4, msg1.length() - 8)
+
+    verify(path1).equals("/mockfile")
+
+    val msg2 = "GET / HTTP/1.1"
+    val path2 = msg1.slice(4, msg1.length() - 8)
+
+    verify(path2).equals("./")
+  }
+
+  "Get filename" should "echo" in {
+    val path1 = "mockfile"
+    val fileName1 = "./" + path1
+
+    verify(fileName1).equals("./mockfile")
+
+    val path2 = "./"
+    verify(path2).equals("./")
+  }
+
+  "This dir" should "exist as directory" in{
+    val dir = new File(".")
+
+    verify(dir.isDirectory)
+  }
+
+  "Html files" should "return filtered list" in {
+    val dir = mock[List[File]]
+
+    verify(dir).forall(File => File.getAbsolutePath.endsWith(".html"))
+  }
 }
