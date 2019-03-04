@@ -7,7 +7,7 @@
 		revision="0.1"
 		conf="runtime"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190303205135"/>
+		date="20190303222034"/>
 	<dependencies>
 		<module organisation="org.markushauck" name="mockitoscala_2.12">
 			<revision name="0.3.0" status="release" pubdate="20170426014025" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/markus1189/mockito-scala" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="4">

@@ -6,12 +6,17 @@ object WebServer {
   def read_and_write(in: BufferedReader, out: BufferedWriter): Unit = {
     val msg = in.readLine()
     System.out.println("Received: " + msg)
-    val file = get_fileName(get_path(msg))
-    println("filename" + file)
+    val fileName = get_fileName(get_path(msg))
+//    println("filename " + fileName)
     val validHTML = html_files(this_dir)
     println("HTML files here: " + validHTML)
-    System.out.println("Returning: " + file)
-    check_dir(in, out, validHTML)
+    System.out.println("Returning: " + fileName)
+    if(fileName.endsWith("./")) {
+      get_index(in, out, validHTML)
+    }
+    else if (fileName.endsWith(".html")){
+      get_request(in,out,validHTML, fileName)
+    }
     out.flush()
     in.close()
     out.close()
@@ -29,7 +34,6 @@ object WebServer {
 
   def this_dir : File = {
     val dir = new File(".") //sets dir to be the current directory
-    System.out.println("directory: " + dir)
     return dir
   }
 
@@ -40,7 +44,16 @@ object WebServer {
     }
   }
 
-  def check_dir (in: BufferedReader, out: BufferedWriter, dir: List[File]): Unit ={
+  def get_not_found (in: BufferedReader, out: BufferedWriter): Unit = {
+    out.write("HTTP/1.1 404 not found\r\n")
+    out.write("Content-Type: text/html; charset=UTF-8\r\n")
+    out.write("\r\n")
+    out.write("404 not found")
+    System.out.println("404 not found")
+    System.out.println("")
+  }
+
+  def get_index (in: BufferedReader, out: BufferedWriter, dir: List[File]): Unit ={
     if (!dir.isEmpty) {
       out.write("HTTP/1.1 200 ok\r\n")
       out.write("Content-Type: text/html; charset=UTF-8\r\n")
@@ -54,12 +67,25 @@ object WebServer {
       out.flush()
     }
     else {
-      out.write("HTTP/1.1 404 not found\r\n")
+      get_not_found(in,out)
+    }
+  }
+
+  def get_request (in: BufferedReader, out: BufferedWriter, dir: List[File], fileName: String): Unit ={
+    if (!dir.isEmpty) {
+      out.write("HTTP/1.1 200 ok\r\n")
       out.write("Content-Type: text/html; charset=UTF-8\r\n")
       out.write("\r\n")
-      out.write("404 not found")
-      System.out.println("404 not ok")
-      System.out.println("")
+      System.out.println()
+      println(dir.head)
+      for (line <- Source.fromFile(fileName).getLines) {
+        println(line)
+        out.write(line + "\r\n")
+      }
+      out.flush()
+    }
+    else {
+      get_not_found(in,out)
     }
   }
 
